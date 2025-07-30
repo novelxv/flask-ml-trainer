@@ -10,6 +10,10 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 from sklearn.preprocessing import LabelEncoder
 from werkzeug.utils import secure_filename
 import warnings
+import webbrowser
+import threading
+import time
+from sklearn.datasets import load_iris
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
@@ -261,7 +265,6 @@ def load_sample_data():
     
     try:
         # Create sample Iris dataset
-        from sklearn.datasets import load_iris
         iris = load_iris()
         
         iris_df = pd.DataFrame(iris.data, columns=iris.feature_names)
@@ -288,5 +291,12 @@ def load_sample_data():
         flash(f'Error loading sample data: {str(e)}')
         return redirect(url_for('index'))
 
+def open_browser():
+    """Open web browser after a short delay"""
+    time.sleep(1.5)  # Wait for Flask to start
+    webbrowser.open('http://localhost:5000')
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Start browser opening in a separate thread
+    threading.Thread(target=open_browser, daemon=True).start()
+    app.run(debug=False, host='0.0.0.0', port=5000)
