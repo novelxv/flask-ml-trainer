@@ -13,7 +13,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'
+app.secret_key = 'ml-trainer-super-secret-key-2025-7b8a9c1d2e3f4g5h6i7j8k9l0m1n2o3p'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MODEL_FOLDER'] = 'models'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="main-container p-5">
+    <div class="text-center mb-4">
+        <h2 class="text-success">
+            <i class="fas fa-check-circle"></i> Prediction Result
+        </h2>
+        <p class="text-muted">Here's what the model predicted based on your input</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Main Prediction Result -->
+            <div class="card card-custom mb-4">
+                <div class="card-header bg-success text-white text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-bullseye"></i> Predicted Class
+                    </h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="display-3 text-success fw-bold mb-3">
+                        {{ result.prediction }}
+                    </div>
+                    <div class="mb-3">
+                        <span class="badge bg-success fs-5">
+                            Confidence: {{ "%.1f"|format(result.probability_percentage) }}%
+                        </span>
+                    </div>
+                    <div class="progress mb-3" style="height: 25px;">
+                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                             role="progressbar" 
+                             style="width: {{ result.probability_percentage }}%"
+                             aria-valuenow="{{ result.probability_percentage }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            {{ "%.1f"|format(result.probability_percentage) }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Class Probabilities -->
+            <div class="card card-custom mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> All Class Probabilities</h5>
+                </div>
+                <div class="card-body">
+                    {% for class_name, probability in result.class_probabilities.items() %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold">{{ class_name }}</span>
+                                <span class="badge bg-primary">{{ "%.2f"|format(probability * 100) }}%</span>
+                            </div>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar 
+                                            {% if class_name == result.prediction %}bg-success{% else %}bg-secondary{% endif %}" 
+                                     role="progressbar" 
+                                     style="width: {{ probability * 100 }}%"
+                                     aria-valuenow="{{ probability * 100 }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Input Values Summary -->
+            <div class="card card-custom mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-keyboard"></i> Input Values Used</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for feature, value in result.input_values.items() %}
+                            <div class="col-md-6 mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">{{ feature }}:</span>
+                                    <span class="fw-bold">{{ value }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confidence Interpretation -->
+            <div class="card card-custom mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Confidence Interpretation</h5>
+                </div>
+                <div class="card-body">
+                    {% set confidence = result.probability_percentage %}
+                    {% if confidence >= 90 %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-thumbs-up"></i>
+                            <strong>Very High Confidence ({{ "%.1f"|format(confidence) }}%)</strong><br>
+                            The model is very confident about this prediction. This is an excellent result!
+                        </div>
+                    {% elif confidence >= 75 %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-check"></i>
+                            <strong>High Confidence ({{ "%.1f"|format(confidence) }}%)</strong><br>
+                            The model is quite confident about this prediction. This is a good result.
+                        </div>
+                    {% elif confidence >= 60 %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Moderate Confidence ({{ "%.1f"|format(confidence) }}%)</strong><br>
+                            The model has moderate confidence. Consider the other class probabilities as well.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-question-circle"></i>
+                            <strong>Low Confidence ({{ "%.1f"|format(confidence) }}%)</strong><br>
+                            The model has low confidence. The prediction might be uncertain.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <a href="{{ url_for('predict_page') }}" class="btn btn-custom me-3">
+                    <i class="fas fa-redo"></i> Make Another Prediction
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

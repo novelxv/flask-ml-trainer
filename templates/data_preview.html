@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="main-container p-5">
+    <div class="text-center mb-4">
+        <h2 class="text-primary">
+            <i class="fas fa-eye"></i> Dataset Preview
+        </h2>
+        <p class="text-muted">Review your data and configure training parameters</p>
+    </div>
+
+    <!-- Dataset Information -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card card-custom">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Dataset Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Shape:</strong> {{ data_info.shape[0] }} rows × {{ data_info.shape[1] }} columns</p>
+                    <p><strong>Columns:</strong> {{ data_info.columns|length }}</p>
+                    <div class="mt-3">
+                        <h6>Column Types:</h6>
+                        <ul class="list-unstyled">
+                            {% for col, dtype in data_info.dtypes.items() %}
+                                <li><span class="badge bg-secondary">{{ col }}</span> → {{ dtype }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card card-custom">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-cogs"></i> Training Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('train_model') }}" method="post">
+                        <div class="mb-3">
+                            <label for="target_column" class="form-label">Target Column (what to predict):</label>
+                            <select class="form-select" name="target_column" required>
+                                <option value="">Select target column...</option>
+                                {% for column in columns %}
+                                    <option value="{{ column }}">{{ column }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="test_size" class="form-label">Test Size (0.1 - 0.5):</label>
+                            <input type="number" class="form-control" name="test_size" 
+                                   value="0.2" min="0.1" max="0.5" step="0.1">
+                            <div class="form-text">Portion of data to use for testing</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="n_estimators" class="form-label">Number of Trees:</label>
+                            <input type="number" class="form-control" name="n_estimators" 
+                                   value="100" min="10" max="1000">
+                            <div class="form-text">More trees = better accuracy but slower training</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="max_depth" class="form-label">Max Depth (optional):</label>
+                            <input type="number" class="form-control" name="max_depth" 
+                                   placeholder="Leave empty for unlimited">
+                            <div class="form-text">Maximum depth of each tree</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-custom w-100">
+                            <i class="fas fa-play"></i> Train Model
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Preview -->
+    <div class="card card-custom">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="fas fa-table"></i> Data Preview (First 5 rows)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                {{ data_info.head|safe }}
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

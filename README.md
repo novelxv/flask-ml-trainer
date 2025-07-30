@@ -188,10 +188,6 @@ Feel free to contribute to this project by:
 - Submitting pull requests
 - Improving documentation
 
-## 📄 License
-
-This project is open source and available under the MIT License.
-
 ## 📞 Support
 
 If you encounter any issues or have questions:
@@ -200,5 +196,3 @@ If you encounter any issues or have questions:
 3. Ensure all requirements are installed correctly
 
 ---
-
-**Made with ❤️ using Flask and scikit-learn**
